@@ -4,8 +4,8 @@
 #define WIN32_LEAN_AND_MEAN
 
 #include "stdafx.h"
-#include <windows.h>
 #include <winsock2.h>
+#include <windows.h>
 #include <ws2tcpip.h>
 #include <stdlib.h>
 #include <tchar.h>
@@ -60,9 +60,9 @@ int _tmain()
 	SOCKET ConnectSocket = INVALID_SOCKET;
 	ADDRINFOW *result = NULL, *ptr = NULL, hints;
 	char sendbuff[BUFFER_LENGTH];
-	wchar_t *FilePath;
-	wchar_t *ServerAddr;
-	wchar_t *Port;
+	wchar_t FilePath[MAX_PATH];
+	wchar_t ServerAddr[20];
+	wchar_t Port[10];
 	int iResult;
 
 	std::wcout << _T("Enter The File To Transfer: ");

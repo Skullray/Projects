@@ -1,0 +1,8 @@
+﻿  FTPClient.cpp
+c:\users\sarthak\desktop\projects\networking\ftp program\ftpclient\ftpclient\ftpclient.cpp(4): warning C4603: 'WIN32_LEAN_AND_MEAN': macro is not defined or definition is different after precompiled header use
+  c:\users\sarthak\desktop\projects\networking\ftp program\ftpclient\ftpclient\ftpclient.cpp(4): note: Add macro to precompiled header instead of defining here
+  c:\users\sarthak\desktop\projects\networking\ftp program\ftpclient\ftpclient\ftpclient.cpp(6): note: use of precompiled header
+c:\users\sarthak\desktop\projects\networking\ftp program\ftpclient\ftpclient\ftpclient.cpp(83): warning C4018: '<': signed/unsigned mismatch
+c:\users\sarthak\desktop\projects\networking\ftp program\ftpclient\ftpclient\ftpclient.cpp(136): warning C4700: uninitialized local variable 'dwBytesRead' used
+  FTPClient.vcxproj -> C:\Users\Sarthak\Desktop\Projects\Networking\FTP Program\FTPClient\Debug\FTPClient.exe
+  FTPClient.vcxproj -> C:\Users\Sarthak\Desktop\Projects\Networking\FTP Program\FTPClient\Debug\FTPClient.pdb (Partial PDB)
