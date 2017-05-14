@@ -58,6 +58,9 @@ int _tmain()
 	std::wcout << _T("Enter Port To Start Server: ");
 	UINT port;
 	std::wcin >> port;
+	//__asm int 4;
+	wchar_t DownloadFolder[MAX_PATH];
+	wcscpy_s(DownloadFolder, MAX_PATH, _T("C:\\Users\\Sarthak\\Desktop\\Projects\\Networking\\FTP Program\\Download\\"));
 
 	WSADATA wsaData;
 
@@ -95,6 +98,8 @@ int _tmain()
 
 	FreeAddrInfoW(result);
 
+	std::wcout << _T("Listening for incoming connections... ");
+
 	if (listen(ListenSocket, SOMAXCONN) == SOCKET_ERROR) {
 		closesocket(ListenSocket);
 		ErrorExit(_T("Listen"));
@@ -105,6 +110,7 @@ int _tmain()
 		ErrorExit(_T("Accept"));
 	}
 
+	std::wcout << _T("Connection Accepted!");
 	closesocket(ListenSocket);
 
 	int iResult;
@@ -118,10 +124,23 @@ int _tmain()
 		if (hFile == INVALID_HANDLE_VALUE) {
 			wchar_t filename[BUFFER_LENGTH];
 			std::mbstowcs(filename, dataBuffer, iResult);
-			hFile = CreateFile(filename, GENERIC_WRITE, 0, NULL, CREATE_ALWAYS, FILE_ATTRIBUTE_NORMAL, NULL);
+			int i;
+			int tsize = strlen(dataBuffer)+1;
+			for (i = tsize; i < iResult; i++) {
+				dataBuffer[i - tsize] = dataBuffer[i];
+			}
+			dataBuffer[i-tsize] = '\0';
+			wcscat_s(DownloadFolder, MAX_PATH, filename);
+			hFile = CreateFile(DownloadFolder, GENERIC_WRITE, 0, NULL, CREATE_ALWAYS, FILE_ATTRIBUTE_NORMAL, NULL);
 			if (hFile == INVALID_HANDLE_VALUE) {
 				ErrorExit(_T("CreateFile"));
 			}
+			DWORD dwBytesWritten;
+			BOOL bErrorFlag = WriteFile(hFile, dataBuffer, (DWORD)iResult - tsize, &dwBytesWritten, NULL);
+			if (bErrorFlag == FALSE) {
+				ErrorExit(_T("WriteFile"));
+			}
+			//__asm int 3;
 		}
 		else {
 			DWORD dwBytesWritten;

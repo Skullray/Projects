@@ -11,6 +11,7 @@
 #include <tchar.h>
 #include <stdio.h>
 #include <strsafe.h>
+#include <psapi.h>
 #include <iostream>
 
 #define BUFFER_LENGTH 512
@@ -54,6 +55,98 @@ void ErrorExit(LPTSTR lpszFunction)
 	ExitProcess(dw);
 }
 
+BOOL GetFileNameFromHandle(HANDLE hFile, TCHAR *szTempFile)
+{
+	BOOL bSuccess = FALSE;
+	TCHAR pszFilename[MAX_PATH + 1];
+	HANDLE hFileMap;
+
+	// Get the file size.
+	DWORD dwFileSizeHi = 0;
+	DWORD dwFileSizeLo = GetFileSize(hFile, &dwFileSizeHi);
+
+	if (dwFileSizeLo == 0 && dwFileSizeHi == 0)
+	{
+		_tprintf(TEXT("Cannot map a file with a length of zero.\n"));
+		return FALSE;
+	}
+
+	// Create a file mapping object.
+	hFileMap = CreateFileMapping(hFile,
+		NULL,
+		PAGE_READONLY,
+		0,
+		1,
+		NULL);
+
+	if (hFileMap)
+	{
+		// Create a file mapping to get the file name.
+		void* pMem = MapViewOfFile(hFileMap, FILE_MAP_READ, 0, 0, 1);
+
+		if (pMem)
+		{
+			if (GetMappedFileName(GetCurrentProcess(),
+				pMem,
+				pszFilename,
+				MAX_PATH))
+			{
+
+				// Translate path with device name to drive letters.
+				TCHAR szTemp[BUFFER_LENGTH];
+				szTemp[0] = '\0';
+
+				if (GetLogicalDriveStrings(BUFFER_LENGTH - 1, szTemp))
+				{
+					TCHAR szName[MAX_PATH];
+					TCHAR szDrive[3] = TEXT(" :");
+					BOOL bFound = FALSE;
+					TCHAR* p = szTemp;
+
+					do
+					{
+						// Copy the drive letter to the template string
+						*szDrive = *p;
+
+						// Look up each device name
+						if (QueryDosDevice(szDrive, szName, MAX_PATH))
+						{
+							size_t uNameLen = _tcslen(szName);
+
+							if (uNameLen < MAX_PATH)
+							{
+								bFound = _tcsnicmp(pszFilename, szName, uNameLen) == 0
+									&& *(pszFilename + uNameLen) == _T('\\');
+
+								if (bFound)
+								{
+									// Reconstruct pszFilename using szTempFile
+									// Replace device path with DOS path
+									StringCchPrintf(szTempFile,
+										MAX_PATH,
+										TEXT("%s%s"),
+										szDrive,
+										pszFilename + uNameLen);
+									StringCchCopyN(pszFilename, MAX_PATH + 1, szTempFile, _tcslen(szTempFile));
+								}
+							}
+						}
+
+						// Go to the next NULL character.
+						while (*p++);
+					} while (!bFound && *p); // end of string
+				}
+			}
+			bSuccess = TRUE;
+			UnmapViewOfFile(pMem);
+		}
+
+		CloseHandle(hFileMap);
+	}
+	//_tprintf(TEXT("File name is %s\n"), pszFilename);
+	return(bSuccess);
+}
+
 int _tmain()
 {
 	WSADATA wsaData;
@@ -78,11 +171,18 @@ int _tmain()
 		ErrorExit(_T("CreateFile"));
 	}
 
-	for (int i = wcslen(FilePath); i > 0; i--) {
-		if (FilePath[i-1] == '\\') {
-			for (int j = 0; j < wcslen(FilePath) - (i - 1); j++) {
-				sendbuff[j] = static_cast<char>(FilePath[i + j]);
+	TCHAR szTempFile[MAX_PATH];
+
+	GetFileNameFromHandle(hFile, szTempFile);
+
+	for (int i = wcslen(szTempFile); i > 0; i--) {
+		if (szTempFile[i-1] == L'\\' || szTempFile[i-1] == L'/') {
+			//std::wcout << i << _T(" ");
+			for (int j = 0; j < wcslen(szTempFile) - (i - 1); j++) {
+				sendbuff[j] = static_cast<char>(szTempFile[i + j]);
+				//std::wcout << szTempFile[i + j];
 			}
+			break;
 		}
 	}
 
@@ -91,11 +191,13 @@ int _tmain()
 	hints.ai_socktype = SOCK_STREAM;
 	hints.ai_protocol = IPPROTO_TCP;
 
-	std::wcout << _T("Enter The Server IP: ");
-	std::wcin.getline(ServerAddr, 16);
+	//std::wcout << _T("Enter The Server IP: ");
+	//std::wcin.getline(ServerAddr, 16);
+	wcscpy(ServerAddr, _T("192.168.0.103"));
 
-	std::wcout << _T("Enter The Port: ");
-	std::wcin.getline(Port, 7);
+	//std::wcout << _T("Enter The Port: ");
+	//std::wcin.getline(Port, 7);
+	wcscpy(Port, _T("12345"));
 
 	iResult = GetAddrInfo(ServerAddr, Port, &hints, &result);
 	if (iResult != 0) {
@@ -125,24 +227,31 @@ int _tmain()
 		ErrorExit(_T("Connect Loop"));
 	}
 
-	iResult = send(ConnectSocket, sendbuff, strlen(sendbuff), 0);
+	int value = 1;
+	setsockopt(ConnectSocket, IPPROTO_TCP, TCP_NODELAY, (char *) &value, sizeof(value));
+	iResult = send(ConnectSocket, sendbuff, strlen(sendbuff)+1, 0);
 	if (iResult == SOCKET_ERROR) {
 		closesocket(ConnectSocket);
 		ErrorExit(_T("send"));
 	}
 
+	value = 0;
+	setsockopt(ConnectSocket, IPPROTO_TCP, TCP_NODELAY, (char *)&value, sizeof(value));
+
+	//__asm int 3;
+
 	while (TRUE) {
-		LPDWORD dwBytesRead;
-		if (FALSE == ReadFile(hFile, sendbuff, BUFFER_LENGTH, dwBytesRead, NULL)) {
+		DWORD dwBytesRead;
+		if (FALSE == ReadFile(hFile, sendbuff, BUFFER_LENGTH, &dwBytesRead, NULL)) {
 			ErrorExit(_T("ReadFile"));
 		}
-		iResult = send(ConnectSocket, sendbuff, *dwBytesRead, 0);
+		iResult = send(ConnectSocket, sendbuff, dwBytesRead, 0);
 		if (iResult == SOCKET_ERROR) {
 			closesocket(ConnectSocket);
 			ErrorExit(_T("File send"));
 		}
 
-		if (BUFFER_LENGTH > *dwBytesRead) {
+		if (BUFFER_LENGTH > dwBytesRead) {
 			iResult = shutdown(ConnectSocket, SD_SEND);
 			if (iResult == SOCKET_ERROR) {
 				closesocket(ConnectSocket);

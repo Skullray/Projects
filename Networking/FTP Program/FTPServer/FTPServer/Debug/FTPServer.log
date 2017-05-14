@@ -2,7 +2,7 @@
 c:\users\sarthak\desktop\projects\networking\ftp program\ftpserver\ftpserver\ftpserver.cpp(4): warning C4603: 'WIN32_LEAN_AND_MEAN': macro is not defined or definition is different after precompiled header use
   c:\users\sarthak\desktop\projects\networking\ftp program\ftpserver\ftpserver\ftpserver.cpp(4): note: Add macro to precompiled header instead of defining here
   c:\users\sarthak\desktop\projects\networking\ftp program\ftpserver\ftpserver\ftpserver.cpp(6): note: use of precompiled header
-c:\users\sarthak\desktop\projects\networking\ftp program\ftpserver\ftpserver\ftpserver.cpp(120): warning C4996: 'mbstowcs': This function or variable may be unsafe. Consider using mbstowcs_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+c:\users\sarthak\desktop\projects\networking\ftp program\ftpserver\ftpserver\ftpserver.cpp(126): warning C4996: 'mbstowcs': This function or variable may be unsafe. Consider using mbstowcs_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
   c:\program files (x86)\windows kits\10\include\10.0.14393.0\ucrt\stdlib.h(924): note: see declaration of 'mbstowcs'
   FTPServer.vcxproj -> C:\Users\Sarthak\Desktop\Projects\Networking\FTP Program\FTPServer\Debug\FTPServer.exe
   FTPServer.vcxproj -> C:\Users\Sarthak\Desktop\Projects\Networking\FTP Program\FTPServer\Debug\FTPServer.pdb (Partial PDB)
