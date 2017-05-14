@@ -191,13 +191,13 @@ int _tmain()
 	hints.ai_socktype = SOCK_STREAM;
 	hints.ai_protocol = IPPROTO_TCP;
 
-	//std::wcout << _T("Enter The Server IP: ");
-	//std::wcin.getline(ServerAddr, 16);
-	wcscpy(ServerAddr, _T("192.168.0.103"));
+	std::wcout << _T("Enter The Server IP: ");
+	std::wcin.getline(ServerAddr, 16);
+	//wcscpy(ServerAddr, _T("192.168.0.103"));
 
-	//std::wcout << _T("Enter The Port: ");
-	//std::wcin.getline(Port, 7);
-	wcscpy(Port, _T("12345"));
+	std::wcout << _T("Enter The Port: ");
+	std::wcin.getline(Port, 7);
+	//wcscpy(Port, _T("12345"));
 
 	iResult = GetAddrInfo(ServerAddr, Port, &hints, &result);
 	if (iResult != 0) {
@@ -227,16 +227,11 @@ int _tmain()
 		ErrorExit(_T("Connect Loop"));
 	}
 
-	int value = 1;
-	setsockopt(ConnectSocket, IPPROTO_TCP, TCP_NODELAY, (char *) &value, sizeof(value));
 	iResult = send(ConnectSocket, sendbuff, strlen(sendbuff)+1, 0);
 	if (iResult == SOCKET_ERROR) {
 		closesocket(ConnectSocket);
 		ErrorExit(_T("send"));
 	}
-
-	value = 0;
-	setsockopt(ConnectSocket, IPPROTO_TCP, TCP_NODELAY, (char *)&value, sizeof(value));
 
 	//__asm int 3;
 
