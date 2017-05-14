@@ -3,9 +3,5 @@ c:\users\sarthak\desktop\projects\networking\ftp program\ftpclient\ftpclient\ftp
   c:\users\sarthak\desktop\projects\networking\ftp program\ftpclient\ftpclient\ftpclient.cpp(4): note: Add macro to precompiled header instead of defining here
   c:\users\sarthak\desktop\projects\networking\ftp program\ftpclient\ftpclient\ftpclient.cpp(6): note: use of precompiled header
 c:\users\sarthak\desktop\projects\networking\ftp program\ftpclient\ftpclient\ftpclient.cpp(181): warning C4018: '<': signed/unsigned mismatch
-c:\users\sarthak\desktop\projects\networking\ftp program\ftpclient\ftpclient\ftpclient.cpp(196): warning C4996: 'wcscpy': This function or variable may be unsafe. Consider using wcscpy_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
-  c:\program files (x86)\windows kits\10\include\10.0.14393.0\ucrt\corecrt_wstring.h(121): note: see declaration of 'wcscpy'
-c:\users\sarthak\desktop\projects\networking\ftp program\ftpclient\ftpclient\ftpclient.cpp(200): warning C4996: 'wcscpy': This function or variable may be unsafe. Consider using wcscpy_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
-  c:\program files (x86)\windows kits\10\include\10.0.14393.0\ucrt\corecrt_wstring.h(121): note: see declaration of 'wcscpy'
   FTPClient.vcxproj -> C:\Users\Sarthak\Desktop\Projects\Networking\FTP Program\FTPClient\Debug\FTPClient.exe
   FTPClient.vcxproj -> C:\Users\Sarthak\Desktop\Projects\Networking\FTP Program\FTPClient\Debug\FTPClient.pdb (Partial PDB)
